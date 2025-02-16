@@ -33,7 +33,7 @@ typedef struct {
 	const char *name;
 	const void *cmd;
 } Sp;
-const char *spcmd1[] = { TERMINAL, "-n", "spterm", "-g", "120x34", "-e", "tmux", NULL };
+const char *spcmd1[] = { TERMINAL, "-n", "spterm", "-g", "120x34", "-e", "tmux-run", NULL };
 const char *spcmd2[] = { TERMINAL, "-n", "spcalc", "-f", "monospace:size=16", "-g", "50x20", "-e", "bc", "-lq", NULL };
 const char *spcmd3[] = { TERMINAL, "-n", "spteams", "-g", "180x54", "-e", "teams-for-linux", NULL };
 const char *spcmd4[] = { TERMINAL, "-n", "spoutlook", "-g", "180x54", "-e", "outlook-for-linux", NULL };
@@ -124,7 +124,7 @@ static const Layout layouts[] = {
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
-static const char *termcmd[]  = { "alacritty", "-e", "tmux", NULL };
+static const char *termcmd[]  = { "alacritty", "-e", "tmux-run", NULL };
 
 /*
  * Xresources preferences to load at startup
