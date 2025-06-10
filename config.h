@@ -38,8 +38,8 @@ const char *spcmd2[] = { TERMINAL, "-n", "spcalc", "-f", "monospace:size=16", "-
 const char *spcmd3[] = { TERMINAL, "-n", "spteams", "-g", "180x54", "-e", "teams-for-linux", NULL };
 const char *spcmd4[] = { TERMINAL, "-n", "spoutlook", "-g", "180x54", "-e", "outlook-for-linux", NULL };
 const char *spcmd5[] = { TERMINAL, "-n", "spspotify", "-g", "180x54", "-e", "spotify", NULL };
-const char *spcmd6[] = { TERMINAL, "-n", "spnotes", "-g", "120x40", "-e", "sh", "-c", "cd ~/Notes && neovide", NULL };
-const char *spcmd7[] = { TERMINAL, "-n", "sptelegram", "-g", "50x34", "-e", "telegram-desktop", NULL };
+const char *spcmd6[] = { TERMINAL, "-n", "spnotes", "-g", "120x40", "-e", "sh", "-c", "cd ~/Notes && nvim", NULL };
+const char *spcmd7[] = { TERMINAL, "-n", "sptelegram", "-g", "50x34", "-e", "Telegram", NULL };
 const char *spcmd8[] = { TERMINAL, "-n", "spdiscord", "-g", "180x54", "-e", "discord", NULL };
 
 static Sp scratchpads[] = {
