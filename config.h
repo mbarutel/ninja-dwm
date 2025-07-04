@@ -112,8 +112,8 @@ static const Layout layouts[] = {
 	{ MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
 #define STACKKEYS(MOD,ACTION) \
-	{ MOD,	XK_j,	ACTION##stack,	{.i = INC(+1) } }, \
-	{ MOD,	XK_k,	ACTION##stack,	{.i = INC(-1) } }, \
+	{ MOD,	XK_e,	ACTION##stack,	{.i = INC(+1) } }, \
+	{ MOD,	XK_i,	ACTION##stack,	{.i = INC(-1) } }, \
 	{ MOD,  XK_v,   ACTION##stack,  {.i = 0 } }, \
 	/* { MOD, XK_grave, ACTION##stack, {.i = PREVSEL } }, \ */
 	/* { MOD, XK_a,     ACTION##stack, {.i = 1 } }, \ */
@@ -185,8 +185,8 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,		XK_q,          spawn,                  {.v = (const char*[]){ "sysact", NULL } } },
 	{ MODKEY,			XK_w,          spawn,                  {.v = (const char*[]){ BROWSER, NULL } } },
 	{ MODKEY|ShiftMask,		XK_w,          spawn,                  {.v = (const char*[]){ TERMINAL, "-e", "sudo", "nmtui", NULL } } },
-	{ MODKEY,			XK_e,          spawn,                  SHCMD(TERMINAL " -e neomutt ; pkill -RTMIN+12 dwmblocks; rmdir ~/.abook 2>/dev/null") },
-	{ MODKEY|ShiftMask,		XK_e,          spawn,                  SHCMD(TERMINAL " -e abook -C ~/.config/abook/abookrc --datafile ~/.config/abook/addressbook") },
+	{ MODKEY,			XK_j,          spawn,                  SHCMD(TERMINAL " -e neomutt ; pkill -RTMIN+12 dwmblocks; rmdir ~/.abook 2>/dev/null") },
+	{ MODKEY|ShiftMask,		XK_j,          spawn,                  SHCMD(TERMINAL " -e abook -C ~/.config/abook/abookrc --datafile ~/.config/abook/addressbook") },
 	{ MODKEY,			XK_r,          spawn,                  {.v = (const char*[]){ TERMINAL, "-e", "lfub", NULL } } },
 	{ MODKEY|ShiftMask,		XK_r,  togglescratch,          {.ui = 7} },
 	{ MODKEY,			XK_t,          setlayout,              {.v = &layouts[0]} }, /* tile */
@@ -195,10 +195,10 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,		XK_y,          setlayout,              {.v = &layouts[3]} }, /* dwindle */
 	{ MODKEY,			XK_u,          setlayout,              {.v = &layouts[4]} }, /* deck */
 	{ MODKEY|ShiftMask,		XK_u,          setlayout,              {.v = &layouts[5]} }, /* monocle */
-	{ MODKEY,			XK_i,          setlayout,              {.v = &layouts[6]} }, /* centeredmaster */
-	{ MODKEY|ShiftMask,		XK_i,          setlayout,              {.v = &layouts[7]} }, /* centeredfloatingmaster */
-	{ MODKEY,			XK_o,          incnmaster,             {.i = +1 } },
-	{ MODKEY|ShiftMask,		XK_o,          incnmaster,             {.i = -1 } },
+	{ MODKEY,			XK_h,          setlayout,              {.v = &layouts[6]} }, /* centeredmaster */
+	{ MODKEY|ShiftMask,		XK_h,          setlayout,              {.v = &layouts[7]} }, /* centeredfloatingmaster */
+	{ MODKEY,			XK_l,          incnmaster,             {.i = +1 } },
+	{ MODKEY|ShiftMask,		XK_l,          incnmaster,             {.i = -1 } },
 	{ MODKEY,			XK_p,          spawn,                  {.v = (const char*[]){ "mpc", "toggle", NULL } } },
 	{ MODKEY|ShiftMask,		XK_p,          spawn,                  SHCMD("mpc pause; pauseallmpv") },
 	{ MODKEY,			XK_bracketleft, spawn,                 {.v = (const char*[]){ "mpc", "seek", "-10", NULL } } },
@@ -218,10 +218,10 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,		XK_f,          setlayout,              {.v = &layouts[8]} },
 	{ MODKEY,			XK_g,          shiftview,              { .i = -1 } },
 	{ MODKEY|ShiftMask,		XK_g,          shifttag,               { .i = -1 } },
-	{ MODKEY,			XK_h,          setmfact,               {.f = -0.05} },
-	{ MODKEY|ShiftMask,		XK_h,          spawn,                  {.v = (const char*[]){ TERMINAL, "-e", "htop", NULL } } },
+	{ MODKEY,			XK_n,          setmfact,               {.f = -0.05} },
+	{ MODKEY|ShiftMask,		XK_n,          spawn,                  {.v = (const char*[]){ TERMINAL, "-e", "htop", NULL } } },
 	/* J and K are automatically bound above in STACKEYS */
-	{ MODKEY,			XK_l,          setmfact,               {.f = +0.05} },
+	{ MODKEY,			XK_o,          setmfact,               {.f = +0.05} },
 	{ MODKEY,			XK_semicolon,  shiftview,              { .i = 1 } },
 	{ MODKEY|ShiftMask,		XK_semicolon,  shifttag,               { .i = 1 } },
 	{ MODKEY,			XK_apostrophe, togglescratch,          {.ui = 1} },
@@ -242,8 +242,8 @@ static const Key keys[] = {
 	{ MODKEY,			XK_b,          togglebar,              {0} },
 	{ MODKEY|ShiftMask,			XK_b, togglescratch,          {.ui = 6} },
 	// { MODKEY|ShiftMask,			XK_b, togglescratch,          {.ui = 4} },
-	{ MODKEY,			XK_n,          togglescratch,          {.ui = 5} },
-	{ MODKEY|ShiftMask,		XK_n,          spawn,                  SHCMD(TERMINAL " -e newsboat ; pkill -RTMIN+6 dwmblocks") },
+	{ MODKEY,			XK_k,          togglescratch,          {.ui = 5} },
+	{ MODKEY|ShiftMask,		XK_k,          spawn,                  SHCMD(TERMINAL " -e newsboat ; pkill -RTMIN+6 dwmblocks") },
 	{ MODKEY,			XK_m,          spawn,                  {.v = (const char*[]){ TERMINAL, "-e", "ncmpcpp", NULL } } },
 	{ MODKEY|ShiftMask,		XK_m,          spawn,                  SHCMD("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle; kill -44 $(pidof dwmblocks)") },
 	{ MODKEY,			XK_comma,      spawn,                  {.v = (const char*[]){ "mpc", "prev", NULL } } },
