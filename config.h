@@ -236,7 +236,7 @@ static const Key keys[] = {
 	{ MODKEY,			XK_x,          incrgaps,               {.i = -3 } },
 	{ MODKEY|ShiftMask,			XK_x, togglescratch,          {.ui = 3} },
 	/* { MODKEY|ShiftMask,		XK_x,          spawn,                  SHCMD("") }, */
-	{ MODKEY,			XK_c,          spawn,                  {.v = (const char*[]){ "chromium", NULL } } },
+	{ MODKEY,			XK_c,          spawn,                  {.v = (const char*[]){ "firefox", NULL } } },
 	{ MODKEY|ShiftMask,			XK_c, togglescratch,          {.ui = 4} },
 	/* V is automatically bound above in STACKKEYS */
 	{ MODKEY,			XK_b,          togglebar,              {0} },
