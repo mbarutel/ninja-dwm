@@ -2039,12 +2039,24 @@ void
 togglescratch(const Arg *arg)
 {
 	Client *c;
+	Monitor *m;
 	unsigned int found = 0;
 	unsigned int scratchtag = SPTAG(arg->ui);
 	Arg sparg = {.v = scratchpads[arg->ui].cmd};
 
-	for (c = selmon->clients; c && !(found = c->tags & scratchtag); c = c->next);
+	/* Search across all monitors for the scratchpad */
+	for (m = mons; m; m = m->next) {
+		for (c = m->clients; c && !(found = c->tags & scratchtag); c = c->next);
+		if (found)
+			break;
+	}
 	if (found) {
+		/* If scratchpad is on a different monitor, move it to selmon */
+		if (m != selmon) {
+			sendmon(c, selmon);
+			c->tags = scratchtag;
+			applyrules(c);
+		}
 		unsigned int newtagset = selmon->tagset[selmon->seltags] ^ scratchtag;
 		if (newtagset) {
 			selmon->tagset[selmon->seltags] = newtagset;
