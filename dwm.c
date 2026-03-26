@@ -2050,32 +2050,48 @@ togglescratch(const Arg *arg)
 		if (found)
 			break;
 	}
-	if (found) {
-		/* If scratchpad is on a different monitor, move it to selmon */
-		if (m != selmon) {
-      unsigned int newtagset = m->tagset[m->seltags] & ~scratchtag;
-      if (newtagset)
-        m->tagset[m->seltags] = newtagset;
-			sendmon(c, selmon);
-			c->tags = scratchtag;
-      c->isfloating = 1;
-      c->x = selmon->wx + (selmon->ww / 2 - WIDTH(c) / 2);
-      c->y = selmon->wy + (selmon->wh / 2 - HEIGHT(c) / 2);
-		}
-		unsigned int newtagset = selmon->tagset[selmon->seltags] ^ scratchtag;
-		if (newtagset) {
-			selmon->tagset[selmon->seltags] = newtagset;
-			focus(NULL);
-			arrange(selmon);
-		}
-		if (ISVISIBLE(c)) {
-			focus(c);
-			restack(selmon);
-		}
-	} else {
-		selmon->tagset[selmon->seltags] |= scratchtag;
-		spawn(&sparg);
-	}
+
+  if (found) {
+    if (m != selmon) {
+      if (ISVISIBLE(c)) {
+        // Visible on another monitor - Hide it
+        unsigned int newtagset = m->tagset[m->seltags] & ~scratchtag;
+        if (newtagset) {
+          m->tagset[m->seltags] = newtagset;
+          arrange(m);
+        }
+      } else {
+        // Not Visible - Move to current monitor and show
+        unsigned int newtagset = m->tagset[m->seltags] & ~scratchtag;
+        if (newtagset)
+          m->tagset[m->seltags] = newtagset;
+        sendmon(c, selmon);
+        c->tags = scratchtag;
+        c->isfloating = 1;
+        c->x = selmon->wx + (selmon->ww / 2 - WIDTH(c) / 2);
+        c->y = selmon->wy + (selmon->wh / 2 - HEIGHT(c) / 2);
+        selmon->tagset[selmon->seltags] |= scratchtag;
+        arrange(NULL);
+        focus(c);
+        restack(selmon);
+      }
+    } else {
+      // Same monitor - toggle visibility
+      unsigned int newtagset = selmon->tagset[selmon->seltags] ^ scratchtag;
+      if (newtagset) {
+        selmon->tagset[selmon->seltags] = newtagset;
+        focus(NULL);
+        arrange(selmon);
+      }
+      if (ISVISIBLE(c)) {
+        focus(c);
+        restack(selmon);
+      }
+    }
+  } else {
+    selmon->tagset[selmon->seltags] |= scratchtag;
+    spawn(&sparg);
+  }
 }
 
 void
