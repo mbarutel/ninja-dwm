@@ -2053,9 +2053,14 @@ togglescratch(const Arg *arg)
 	if (found) {
 		/* If scratchpad is on a different monitor, move it to selmon */
 		if (m != selmon) {
+      unsigned int newtagset = m->tagset[m->seltags] & ~scratchtag;
+      if (newtagset)
+        m->tagset[m->seltags] = newtagset;
 			sendmon(c, selmon);
 			c->tags = scratchtag;
-			applyrules(c);
+      c->isfloating = 1;
+      c->x = selmon->wx + (selmon->ww / 2 - WIDTH(c) / 2);
+      c->y = selmon->wy + (selmon->wh / 2 - HEIGHT(c) / 2);
 		}
 		unsigned int newtagset = selmon->tagset[selmon->seltags] ^ scratchtag;
 		if (newtagset) {
