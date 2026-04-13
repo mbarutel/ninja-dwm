@@ -36,23 +36,17 @@ typedef struct {
 } Sp;
 const char *spcmd1[] = { TERMINAL, "-n", "spterm", "-g", "120x34", NULL };
 const char *spcmd2[] = { TERMINAL, "-n", "spcalc", "-f", "monospace:size=16", "-g", "50x20", "-e", "bc", "-lq", NULL };
-const char *spcmd3[] = { TERMINAL, "-n", "spteams", "-g", "180x54", "-e", "teams-for-linux", NULL };
-const char *spcmd4[] = { TERMINAL, "-n", "spoutlook", "-g", "180x54", "-e", "outlook-for-linux", NULL };
-const char *spcmd5[] = { TERMINAL, "-n", "spspotify", "-g", "180x54", "-e", "spotify", NULL };
-const char *spcmd6[] = { TERMINAL, "-n", "spnotes", "-g", "120x40", "-e", "sh", "-c", "cd ~/Notes && nvim", NULL };
-const char *spcmd7[] = { TERMINAL, "-n", "sptelegram", "-g", "50x34", "-e", "Telegram", NULL };
-const char *spcmd8[] = { TERMINAL, "-n", "spdiscord", "-g", "180x54", "-e", "discord", NULL };
+const char *spcmd3[] = { TERMINAL, "-n", "spcomms", "-g", "120x40", "-e", "slack", NULL };
+const char *spcmd4[] = { TERMINAL, "-n", "spnotes", "-g", "120x40", "-e", "alacritty", "-e", "nvim -e ~/Notes", NULL };
+const char *spcmd5[] = { TERMINAL, "-n", "sptelegram", "-g", "50x34", "-e", "telegram-desktop", NULL };
 
 static Sp scratchpads[] = {
 	/* name          cmd  */
 	{"spterm",      spcmd1},
 	{"spcalc",      spcmd2},
-	{"spteams",     spcmd3},
-	{"spoutlook",   spcmd4},
-	{"spspotify",  	spcmd5},
-	{"spnotes",   	spcmd6},
-	{"sptelegram",  spcmd7},
-	{"spdiscord",   spcmd8},
+	{"spcomms",     spcmd3},
+	{"spnotes",   	spcmd4},
+	{"sptelegram",  spcmd5},
 };
 
 /* tagging */
@@ -72,12 +66,9 @@ static const Rule rules[] = {
 	{ TERMCLASS,  "bg",         NULL,       	 1 << 7,      0,           1,          0,         -1 },
 	{ TERMCLASS,  "spterm",     NULL,       	 SPTAG(0),    1,           1,          0,         -1 },
 	{ TERMCLASS,  "spcalc",     NULL,       	 SPTAG(1),    1,           1,          0,         -1 },
-	{ TERMCLASS,  "spteams",    NULL,       	 SPTAG(2),    1,           1,          0,         -1 },
-	{ TERMCLASS,  "spoutlook",  NULL,       	 SPTAG(3),    1,           1,          0,         -1 },
-	{ TERMCLASS,  "spspotify",  NULL,          SPTAG(4),    1,           1,          0,         -1 },
-	{ TERMCLASS,  "spnotes",    NULL,          SPTAG(5),    1,           1,          0,         -1 },
-	{ TERMCLASS,  "sptelegram", NULL,          SPTAG(6),    1,           1,          0,         -1 },
-	{ TERMCLASS,  "spdiscord",  NULL,          SPTAG(7),    1,           1,          0,         -1 },
+	{ TERMCLASS,  "spcomms",    NULL,       	 SPTAG(2),    1,           1,          0,         -1 },
+	{ TERMCLASS,  "spnotes",    NULL,          SPTAG(3),    1,           1,          0,         -1 },
+	{ TERMCLASS,  "sptelegram", NULL,          SPTAG(4),    1,           1,          0,         -1 },
 };
 
 /* layout(s) */
@@ -175,8 +166,8 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,		XK_0,	       tag,                    {.ui = ~0 } },
 	{ MODKEY,			XK_minus,      spawn,                  SHCMD("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-; kill -44 $(pidof dwmblocks)") },
 	{ MODKEY|ShiftMask,		XK_minus,      spawn,                  SHCMD("wpctl set-volume @DEFAULT_AUDIO_SINK@ 15%-; kill -44 $(pidof dwmblocks)") },
-	{ MODKEY,			XK_equal,      spawn,                  SHCMD("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+; kill -44 $(pidof dwmblocks)") },
-	{ MODKEY|ShiftMask,		XK_equal,      spawn,                  SHCMD("wpctl set-volume @DEFAULT_AUDIO_SINK@ 15%+; kill -44 $(pidof dwmblocks)") },
+	{ MODKEY,			XK_equal,      spawn,                  SHCMD("wpctl set-volume --limit 1.0 @DEFAULT_AUDIO_SINK@ 5%+; kill -44 $(pidof dwmblocks)") },
+	{ MODKEY|ShiftMask,		XK_equal,      spawn,                  SHCMD("wpctl set-volume --limit 1.0 @DEFAULT_AUDIO_SINK@ 15%+; kill -44 $(pidof dwmblocks)") },
 	{ MODKEY,			XK_BackSpace,  spawn,                  {.v = (const char*[]){ "sysact", NULL } } },
 	{ MODKEY|ShiftMask,		XK_BackSpace,  spawn,                  {.v = (const char*[]){ "sysact", NULL } } },
 
@@ -189,7 +180,7 @@ static const Key keys[] = {
 	{ MODKEY,			XK_j,          spawn,                  SHCMD(TERMINAL " -e neomutt ; pkill -RTMIN+12 dwmblocks; rmdir ~/.abook 2>/dev/null") },
 	{ MODKEY|ShiftMask,		XK_j,          spawn,                  SHCMD(TERMINAL " -e abook -C ~/.config/abook/abookrc --datafile ~/.config/abook/addressbook") },
 	{ MODKEY,			XK_r,          spawn,                  {.v = (const char*[]){ TERMINAL, "-e", "lfub", NULL } } },
-	{ MODKEY|ShiftMask,		XK_r,  togglescratch,          {.ui = 7} },
+	{ MODKEY|ShiftMask,		XK_r,  togglescratch,          {.ui = 2} },
 	{ MODKEY,			XK_t,          setlayout,              {.v = &layouts[0]} }, /* tile */
 	{ MODKEY|ShiftMask,		XK_t,          setlayout,              {.v = &layouts[1]} }, /* bstack */
 	{ MODKEY,			XK_y,          setlayout,              {.v = &layouts[2]} }, /* spiral */
@@ -211,7 +202,7 @@ static const Key keys[] = {
 
 	{ MODKEY,			XK_a,          togglegaps,             {0} },
 	{ MODKEY|ShiftMask,		XK_a,          defaultgaps,            {0} },
-	{ MODKEY,		XK_s,          spawn,                  {.v = (const char*[]){ "alacritty", "-e", "tmux-run", NULL } } },
+	{ MODKEY,			XK_s,     spawn,                  {.v = termcmd } },
 	{ MODKEY|ShiftMask,			XK_s,          togglesticky,           {0} },
 	{ MODKEY,			XK_d,          spawn,                  {.v = (const char*[]){ "dmenu_run", NULL } } },
 	{ MODKEY|ShiftMask,		XK_d,          spawn,                  {.v = (const char*[]){ "passmenu", NULL } } },
@@ -228,22 +219,19 @@ static const Key keys[] = {
 	{ MODKEY,			XK_apostrophe, togglescratch,          {.ui = 1} },
 	/* { MODKEY|ShiftMask,		XK_apostrophe, spawn,                  SHCMD("") }, */
 	{ MODKEY|ShiftMask,		XK_apostrophe, togglesmartgaps,        {0} },
-	{ MODKEY,			XK_Return,     spawn,                  {.v = termcmd } },
+	{ MODKEY,		XK_Return,          spawn,                  {.v = (const char*[]){ "alacritty", "-e", "tmux-run", NULL } } },
 	{ MODKEY|ShiftMask,		XK_Return,     togglescratch,          {.ui = 0} },
 
 	{ MODKEY,			XK_z,          incrgaps,               {.i = +3 } },
-	{ MODKEY|ShiftMask,			XK_z, togglescratch,          {.ui = 2} },
-	/* { MODKEY|ShiftMask,		XK_z,          spawn,                  SHCMD("") }, */
+	{ MODKEY|ShiftMask,		XK_z,          spawn,                  SHCMD("") },
 	{ MODKEY,			XK_x,          incrgaps,               {.i = -3 } },
-	{ MODKEY|ShiftMask,			XK_x, togglescratch,          {.ui = 3} },
-	/* { MODKEY|ShiftMask,		XK_x,          spawn,                  SHCMD("") }, */
+	{ MODKEY|ShiftMask,		XK_x,          spawn,                  SHCMD("") },
 	{ MODKEY,			XK_c,          spawn,                  {.v = (const char*[]){ "firefox", NULL } } },
-	{ MODKEY|ShiftMask,			XK_c, togglescratch,          {.ui = 4} },
 	/* V is automatically bound above in STACKKEYS */
 	{ MODKEY,			XK_b,          togglebar,              {0} },
-	{ MODKEY|ShiftMask,			XK_b, togglescratch,          {.ui = 6} },
+	{ MODKEY|ShiftMask,			XK_b, togglescratch,          {.ui = 4} },
 	// { MODKEY|ShiftMask,			XK_b, togglescratch,          {.ui = 4} },
-	{ MODKEY,			XK_k,          togglescratch,          {.ui = 5} },
+	{ MODKEY,			XK_k,          togglescratch,          {.ui = 3} },
 	{ MODKEY|ShiftMask,		XK_k,          spawn,                  SHCMD(TERMINAL " -e newsboat ; pkill -RTMIN+6 dwmblocks") },
 	{ MODKEY,			XK_m,          spawn,                  {.v = (const char*[]){ TERMINAL, "-e", "ncmpcpp", NULL } } },
 	{ MODKEY|ShiftMask,		XK_m,          spawn,                  SHCMD("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle; kill -44 $(pidof dwmblocks)") },
@@ -286,7 +274,7 @@ static const Key keys[] = {
 	{ MODKEY,			XK_Scroll_Lock, spawn,                 SHCMD("killall screenkey || screenkey &") },
 
 	{ 0, XF86XK_AudioMute,                         spawn,                  SHCMD("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle; kill -44 $(pidof dwmblocks)") },
-	{ 0, XF86XK_AudioRaiseVolume,                  spawn,                  SHCMD("wpctl set-volume @DEFAULT_AUDIO_SINK@ 0%- && wpctl set-volume @DEFAULT_AUDIO_SINK@ 3%+; kill -44 $(pidof dwmblocks)") },
+	{ 0, XF86XK_AudioRaiseVolume,                  spawn,                  SHCMD("wpctl set-volume @DEFAULT_AUDIO_SINK@ 0%- && wpctl set-volume --limit 1.0 @DEFAULT_AUDIO_SINK@ 3%+; kill -44 $(pidof dwmblocks)") },
 	{ 0, XF86XK_AudioLowerVolume,                  spawn,                  SHCMD("wpctl set-volume @DEFAULT_AUDIO_SINK@ 0%+ && wpctl set-volume @DEFAULT_AUDIO_SINK@ 3%-; kill -44 $(pidof dwmblocks)") },
 	{ 0, XF86XK_AudioPrev,                         spawn,                  {.v = (const char*[]){ "mpc", "prev", NULL } } },
 	{ 0, XF86XK_AudioNext,                         spawn,                  {.v = (const char*[]){ "mpc",  "next", NULL } } },

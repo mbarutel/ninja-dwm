@@ -198,7 +198,6 @@ static void detach(Client *c);
 static void detachstack(Client *c);
 static Monitor *dirtomon(int dir);
 static void drawbar(Monitor *m);
-static int drawstatusbar(Monitor *m, int bh, char* text);
 static void drawbars(void);
 static void enternotify(XEvent *e);
 static void expose(XEvent *e);
@@ -297,7 +296,7 @@ static pid_t winpid(Window w);
 
 /* variables */
 static const char broken[] = "broken";
-static char stext[1024];
+static char stext[256];
 static char rawstext[256];
 static int dwmblockssig;
 pid_t dwmblockspid = 0;
@@ -640,7 +639,7 @@ cleanup(void)
 		cleanupmon(mons);
 	for (i = 0; i < CurLast; i++)
 		drw_cur_free(drw, cursor[i]);
-	for (i = 0; i < LENGTH(colors) + 1; i++)
+	for (i = 0; i < LENGTH(colors); i++)
 		free(scheme[i]);
 	free(scheme);
 	XDestroyWindow(dpy, wmcheckwin);
@@ -869,114 +868,6 @@ dirtomon(int dir)
 	return m;
 }
 
-int
-drawstatusbar(Monitor *m, int bh, char* stext) {
-	int ret, i, w, x, len;
-	short isCode = 0;
-	char *text;
-	char *p;
-
-	len = strlen(stext) + 1 ;
-	if (!(text = (char*) malloc(sizeof(char)*len)))
-		die("malloc");
-	p = text;
-	memcpy(text, stext, len);
-
-	/* compute width of the status text */
-	w = 0;
-	i = -1;
-	while (text[++i]) {
-		if (text[i] == '^') {
-			if (!isCode) {
-				isCode = 1;
-				text[i] = '\0';
-				w += TEXTW(text) - lrpad;
-				text[i] = '^';
-				if (text[++i] == 'f')
-					w += atoi(text + ++i);
-			} else {
-				isCode = 0;
-				text = text + i + 1;
-				i = -1;
-			}
-		}
-	}
-	if (!isCode)
-		w += TEXTW(text) - lrpad;
-	else
-		isCode = 0;
-	text = p;
-
-	w += 2; /* 1px padding on both sides */
-	ret = x = m->ww - w;
-
-	drw_setscheme(drw, scheme[LENGTH(colors)]);
-	drw->scheme[ColFg] = scheme[SchemeNorm][ColFg];
-	drw->scheme[ColBg] = scheme[SchemeNorm][ColBg];
-	drw_rect(drw, x, 0, w, bh, 1, 1);
-	x++;
-
-	/* process status text */
-	i = -1;
-	while (text[++i]) {
-		if (text[i] == '^' && !isCode) {
-			isCode = 1;
-
-			text[i] = '\0';
-			w = TEXTW(text) - lrpad;
-			drw_text(drw, x, 0, w, bh, 0, text, 0);
-
-			x += w;
-
-			/* process code */
-			while (text[++i] != '^') {
-				if (text[i] == 'c') {
-					char buf[8];
-					memcpy(buf, (char*)text+i+1, 7);
-					buf[7] = '\0';
-					drw_clr_create(drw, &drw->scheme[ColFg], buf);
-					i += 7;
-				} else if (text[i] == 'b') {
-					char buf[8];
-					memcpy(buf, (char*)text+i+1, 7);
-					buf[7] = '\0';
-					drw_clr_create(drw, &drw->scheme[ColBg], buf);
-					i += 7;
-				} else if (text[i] == 'd') {
-					drw->scheme[ColFg] = scheme[SchemeNorm][ColFg];
-					drw->scheme[ColBg] = scheme[SchemeNorm][ColBg];
-				} else if (text[i] == 'r') {
-					int rx = atoi(text + ++i);
-					while (text[++i] != ',');
-					int ry = atoi(text + ++i);
-					while (text[++i] != ',');
-					int rw = atoi(text + ++i);
-					while (text[++i] != ',');
-					int rh = atoi(text + ++i);
-
-					drw_rect(drw, rx + x, ry, rw, rh, 1, 0);
-				} else if (text[i] == 'f') {
-					x += atoi(text + ++i);
-				}
-			}
-
-			text = text + i + 1;
-			i=-1;
-			isCode = 0;
-		}
-	}
-
-	if (!isCode) {
-		w = TEXTW(text) - lrpad;
-		drw_text(drw, x, 0, w, bh, 0, text, 0);
-	}
-
-	drw_setscheme(drw, scheme[SchemeNorm]);
-	free(p);
-
-	return ret;
-}
-
 void
 drawbar(Monitor *m)
 {
@@ -991,7 +882,9 @@ drawbar(Monitor *m)
 
 	/* draw status first so it can be overdrawn by tags later */
 	if (m == selmon) { /* status is only drawn on selected monitor */
-		tw = m->ww - drawstatusbar(m, bh, stext);
+    drw_setscheme(drw, scheme[SchemeNorm]);
+    tw = TEXTW(stext) - lrpad + 2; /* 2px right padding */
+    drw_text(drw, m->ww - tw, 0, tw, bh, 0, stext, 0);
 	}
 
 	for (c = m->clients; c; c = c->next) {
@@ -1735,7 +1628,7 @@ run(void)
 
 void
 runAutostart(void) {
-	system("killall -q dwmblocks; dwmblocks &");
+  system("killall -q dwmblocks; dwmblocks &");
 }
 
 void
@@ -1960,8 +1853,7 @@ setup(void)
 	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
 	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
 	/* init appearance */
-	scheme = ecalloc(LENGTH(colors) + 1, sizeof(Clr *));
-	scheme[LENGTH(colors)] = drw_scm_create(drw, colors[0], 3);
+	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
 	for (i = 0; i < LENGTH(colors); i++)
 		scheme[i] = drw_scm_create(drw, colors[i], 3);
 	/* init bars */
@@ -2147,26 +2039,59 @@ void
 togglescratch(const Arg *arg)
 {
 	Client *c;
+	Monitor *m;
 	unsigned int found = 0;
 	unsigned int scratchtag = SPTAG(arg->ui);
 	Arg sparg = {.v = scratchpads[arg->ui].cmd};
 
-	for (c = selmon->clients; c && !(found = c->tags & scratchtag); c = c->next);
-	if (found) {
-		unsigned int newtagset = selmon->tagset[selmon->seltags] ^ scratchtag;
-		if (newtagset) {
-			selmon->tagset[selmon->seltags] = newtagset;
-			focus(NULL);
-			arrange(selmon);
-		}
-		if (ISVISIBLE(c)) {
-			focus(c);
-			restack(selmon);
-		}
-	} else {
-		selmon->tagset[selmon->seltags] |= scratchtag;
-		spawn(&sparg);
+	/* Search across all monitors for the scratchpad */
+	for (m = mons; m; m = m->next) {
+		for (c = m->clients; c && !(found = c->tags & scratchtag); c = c->next);
+		if (found)
+			break;
 	}
+
+  if (found) {
+    if (m != selmon) {
+      if (ISVISIBLE(c)) {
+        // Visible on another monitor - Hide it
+        unsigned int newtagset = m->tagset[m->seltags] & ~scratchtag;
+        if (newtagset) {
+          m->tagset[m->seltags] = newtagset;
+          arrange(m);
+        }
+      } else {
+        // Not Visible - Move to current monitor and show
+        unsigned int newtagset = m->tagset[m->seltags] & ~scratchtag;
+        if (newtagset)
+          m->tagset[m->seltags] = newtagset;
+        sendmon(c, selmon);
+        c->tags = scratchtag;
+        c->isfloating = 1;
+        c->x = selmon->wx + (selmon->ww / 2 - WIDTH(c) / 2);
+        c->y = selmon->wy + (selmon->wh / 2 - HEIGHT(c) / 2);
+        selmon->tagset[selmon->seltags] |= scratchtag;
+        arrange(NULL);
+        focus(c);
+        restack(selmon);
+      }
+    } else {
+      // Same monitor - toggle visibility
+      unsigned int newtagset = selmon->tagset[selmon->seltags] ^ scratchtag;
+      if (newtagset) {
+        selmon->tagset[selmon->seltags] = newtagset;
+        focus(NULL);
+        arrange(selmon);
+      }
+      if (ISVISIBLE(c)) {
+        focus(c);
+        restack(selmon);
+      }
+    }
+  } else {
+    selmon->tagset[selmon->seltags] |= scratchtag;
+    spawn(&sparg);
+  }
 }
 
 void
